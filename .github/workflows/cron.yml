@@ -1,7 +1,7 @@
 name: Check YouTube Live Status
 on:
   schedule:
-    - cron: "0 * * * *" # Runs every hour at the 0th minute
+    - cron: "0 */3 * * *" # Runs At the start of every 5th hour
   workflow_dispatch: # Allows manual triggering
 
 jobs:
