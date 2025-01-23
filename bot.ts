@@ -162,6 +162,7 @@ function main() {
             isLive = true; // Mark as live
             const message = `🎥 **${liveStream.snippet.channelTitle}** is live!\n**Title:** ${liveStream.snippet.title}\n**Watch here:** https://www.youtube.com/watch?v=${liveStream.id.videoId}`;
 
+            // @ts-ignore
             channel.send(message);
           } else if (
             liveStream.snippet.liveBroadcastContent !== "live" &&
