@@ -1,0 +1,23 @@
+{
+  "name": "ytdbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@9.15.3",
+  "scripts": {
+    "start": "dotenvx run -- tsx bot.ts"
+  },
+  "dependencies": {
+    "discord.js": "^14.17.3"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "^1.33.0",
+    "@types/node": "^22.10.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
