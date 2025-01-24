@@ -118,14 +118,12 @@ async function checkYoutubeChannelIsLive({
   }
 }
 
-let isLive = false;
-
 function main() {
   const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   });
 
-  client.on(Events.ClientReady, () => {
+  client.on(Events.ClientReady, async () => {
     console.log(`Logged in ready client`);
     let channelId = "";
 
@@ -152,39 +150,35 @@ function main() {
       return;
     }
 
-    checkYoutubeChannelIsLive({
+    const { data, error } = await checkYoutubeChannelIsLive({
       apiKey: env.YOUTUBE_API_KEY,
       channelId: env.YOUTUBE_CHANNEL_ID,
-    })
-      .then(({ data, error }) => {
-        if (error || !data) {
-          console.error("Error", error);
-          return;
-        }
+    });
 
-        if (data.items && data.items.length > 0) {
-          const liveStream = data.items[0];
-          if (liveStream.snippet.liveBroadcastContent === "live" && !isLive) {
-            isLive = true; // Mark as live
-            const message = `🎥 **${liveStream.snippet.channelTitle}** is live!\n**Title:** ${liveStream.snippet.title}\n**Watch here:** https://www.youtube.com/watch?v=${liveStream.id.videoId}`;
+    if (error || !data) {
+      console.error("Error", error);
+      return;
+    }
 
-            // @ts-ignore
-            channel.send(message);
+    const hasLiveStream = data.items && data.items.length > 0;
 
-            console.log("Message sent");
-          } else if (
-            liveStream.snippet.liveBroadcastContent !== "live" &&
-            isLive
-          ) {
-            isLive = false; // Mark as not live
-          }
-        } else if (isLive) {
-          isLive = false; // Mark as not live
-        }
-      })
-      .catch(({ error }) => {
-        console.error("Error", error);
-      });
+    if (!hasLiveStream) {
+      console.log("No live stream found");
+      process.exit(0);
+    }
+
+    for (const liveStream of data.items) {
+      if (liveStream.snippet.liveBroadcastContent === "live") {
+        const message = `🎥 **${liveStream.snippet.channelTitle}** is live!\n**Title:** ${liveStream.snippet.title}\n**Watch here:** https://www.youtube.com/watch?v=${liveStream.id.videoId}`;
+
+        // @ts-ignore
+        channel.send(message);
+
+        console.log("Message sent");
+      }
+    }
+
+    process.exit(0);
   });
 
   client.login(env.DISCORD_BOT_TOKEN);
