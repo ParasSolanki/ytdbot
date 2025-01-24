@@ -1,14 +1,14 @@
 name: Check YouTube Live Status
 on:
   schedule:
-    - cron: "0 */3 * * *" # Runs At the start of every 5th hour
+    - cron: "0 */3 * * *" # Runs At the start of every 3rd hour
   workflow_dispatch: # Allows manual triggering
 
 jobs:
   check-live:
     environment: Production
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
