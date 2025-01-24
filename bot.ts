@@ -50,6 +50,7 @@ async function getYoutubeChannelIdFromHandle({
   handle: string;
   apiKey: string;
 }) {
+  console.log("Getting YT channel id from handle");
   const url = new URL("/youtube/v3/channels", YOUTUBE_API_BASE_URL);
 
   url.searchParams.set("part", "snippet");
@@ -85,7 +86,7 @@ async function checkYoutubeChannelIsLive({
   channelId: string;
   apiKey: string;
 }) {
-  // TOOD: add logs
+  console.log("Checking YT channel is live");
 
   const url = new URL("/youtube/v3/search", YOUTUBE_API_BASE_URL);
 
@@ -98,10 +99,7 @@ async function checkYoutubeChannelIsLive({
   try {
     const response = await fetch(url.toString());
 
-    console.log(url.toString());
-
     if (!response.ok) {
-      console.log(response);
       throw new Error(
         `Something went wrong while checking YT ${channelId} channel is live `
       );
@@ -127,9 +125,8 @@ function main() {
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
   });
 
-  client.on(Events.ClientReady, (readyClient) => {
-    console.log(`Logged in as ${readyClient.user.tag}!`);
-
+  client.on(Events.ClientReady, () => {
+    console.log(`Logged in ready client`);
     let channelId = "";
 
     for (const guild of client.guilds.cache.values()) {
@@ -143,18 +140,27 @@ function main() {
       }
     }
 
-    if (!channelId) return;
+    if (!channelId) {
+      console.error("Channel not found");
+      return;
+    }
 
     const channel = client.channels.cache.get(channelId);
 
-    if (!channel || !channel.isTextBased()) return;
+    if (!channel || !channel.isTextBased()) {
+      console.error("Channel not found");
+      return;
+    }
 
     checkYoutubeChannelIsLive({
       apiKey: env.YOUTUBE_API_KEY,
       channelId: env.YOUTUBE_CHANNEL_ID,
     })
       .then(({ data, error }) => {
-        if (error || !data) return;
+        if (error || !data) {
+          console.error("Error", error);
+          return;
+        }
 
         if (data.items && data.items.length > 0) {
           const liveStream = data.items[0];
@@ -164,6 +170,8 @@ function main() {
 
             // @ts-ignore
             channel.send(message);
+
+            console.log("Message sent");
           } else if (
             liveStream.snippet.liveBroadcastContent !== "live" &&
             isLive
@@ -176,9 +184,6 @@ function main() {
       })
       .catch(({ error }) => {
         console.error("Error", error);
-      })
-      .finally(() => {
-        process.exit(1);
       });
   });
 
