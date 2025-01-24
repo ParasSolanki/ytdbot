@@ -1,6 +1,6 @@
 # YTDBot
 
-Discord bot that sends message when your favorite youtube channel is live
+Discord bot that sends message to your server's channel when your favorite youtube channel is live.
 
 ## How it works
 
