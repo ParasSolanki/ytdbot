@@ -172,7 +172,7 @@ function main() {
         const message = `🎥 **${liveStream.snippet.channelTitle}** is live!\n**Title:** ${liveStream.snippet.title}\n**Watch here:** https://www.youtube.com/watch?v=${liveStream.id.videoId}`;
 
         // @ts-ignore
-        channel.send(message);
+        await channel.send(message);
 
         console.log("Message sent");
       }
